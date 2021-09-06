@@ -2,9 +2,9 @@ import { Controller, Get, Injectable, Module } from '@nestjs/common';
 import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
 import { AppService } from 'src/app.service';
 import { Repository } from 'typeorm';
-import { BaseController } from '../base/controller'
-import { BaseService } from '../base/service'
-import { UserEntity } from './entity'
+import { BaseController } from '../base/controller';
+import { BaseService } from '../base/service';
+import { UserEntity } from './entity';
 // @Injectable()
 // export class UserService extends BaseService<UserEntity> {
 //     constructor(
@@ -31,4 +31,4 @@ import { UserEntity } from './entity'
 //     controllers: [UserController],
 //     providers: [UserService,AppService]
 // })
-export class UserModule { }
+export class UserModule {}
