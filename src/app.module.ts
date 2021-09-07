@@ -1,90 +1,35 @@
-import { Controller, Get, Injectable, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { InjectRepository, TypeOrmModule } from '@nestjs/typeorm';
-import { AdminModule } from './adminModule/module';
-import { UserEntity, UserController, UserService } from './adminModule/user';
-import { Constructor } from 'nestjs-abstract-module';
-import { Column, Entity, EntityRepository, Repository } from 'typeorm';
-const applyMixins = (derivedCtor: any, constructors: any[]) => {
-  constructors.forEach((baseCtor) => {
-    Object.getOwnPropertyNames(baseCtor.prototype).forEach((name) => {
-      Object.defineProperty(
-        derivedCtor.prototype,
-        name,
-        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ||
-          Object.create(null),
-      );
-    });
-  });
-};
-const HocOriginClass = <T extends Constructor, Y extends Constructor>(
-  Base: T,
-  ExtendClass: Y,
-) => {
-  if (ExtendClass) {
-    Object.getOwnPropertyNames(ExtendClass.prototype).forEach((name) => {
-      if (name !== 'constructor') {
-        Base.prototype[name] = ExtendClass.prototype[name];
-      }
-    });
-  }
-};
-@Entity('user')
-class A extends UserEntity {
-  @Column({
-    nullable: true,
-  })
-  username: string;
-}
-
-@Injectable()
-export class ExtendService extends UserService {
-  constructor(
-    @InjectRepository(A)
-    readonly repository: Repository<A>,
-  ) {
-    super(repository);
-  }
-  ttt() {
-    return this.repository.findOne();
-  }
-}
-@Controller('user')
-export class ExtendController extends UserController {
-  constructor(readonly service: ExtendService) {
-    super(service);
-  }
-  @Get('ccc')
-  getCCC() {
-    return this.service.ttt();
-  }
-}
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { AdminModule, generaOriginFn } from './adminModule/module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { mixinAdminModule } from './mixinAdminModule';
+let { entities, Controllers, Services } = generaOriginFn()
+mixinAdminModule({ entities, Controllers, Services })
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'data/test.db',
-      entities: [UserEntity],
-      synchronize: true,
+    ConfigModule.forRoot({}),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (config: ConfigService) => {
+        console.log(config.get('DATABASE'))
+        return {
+          type: 'sqlite',
+          database: config.get('DATABASE'),
+          entities: [...Object.values(entities)],
+          synchronize: true,
+        }
+      },
+      inject: [ConfigService]
     }),
     AdminModule.forRootAsync({
-      imports: [TypeOrmModule],
-      useFactory: async () => {
-        await new Promise((resolve) => {
-          setTimeout(resolve, 1000);
-        });
-        return {
-          controllers: [ExtendController],
-          providers: [ExtendService],
-          entities: [A],
-        };
-      },
+      controllers: [...Object.values(Controllers)],
+      providers: [...Object.values(Services)],
+      entities: [...Object.values(entities)]
     }),
-    // UserModule
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
