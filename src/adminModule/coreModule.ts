@@ -13,7 +13,6 @@ import { NestContainer } from '@nestjs/core';
 @Module({})
 export class AdminCoreModule implements NestModule {
   static forRootAsync(params: ParamsAsync): DynamicModule {
-
     return {
       module: AdminCoreModule,
       imports: [...params.imports],
@@ -42,16 +41,15 @@ export class AdminCoreModule implements NestModule {
     console.log('124124');
   }
   async onModuleInit() {
-    const container: NestContainer = global.app.container
+    const container: NestContainer = global.app.container;
     const modules = generateModule(this.params);
-    container.addModule(modules, []).then(resp => {
-      console.log(resp.token)
-      console.log(resp.createModuleReferenceType())
-      console.log(resp.metatype)
+    container.addModule(modules, []).then((resp) => {
+      console.log(resp.token);
+      console.log(resp.createModuleReferenceType());
+      console.log(resp.metatype);
 
       // container.registerRequestProvider(resp.getProviderByKey(resp.id))
-    })
-
+    });
 
     // console.log(global.test);
     console.log('1231312311111');
