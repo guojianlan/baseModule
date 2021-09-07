@@ -9,6 +9,7 @@ const CrudController = WrapController({
 export class UserController extends CrudController {
   constructor(readonly service: UserService) {
     super(service);
+    console.log('install UserController');
   }
   @Get('ttt')
   getttt() {

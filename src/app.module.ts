@@ -6,14 +6,24 @@ import { AdminModule, generaOriginFn } from './adminModule/module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { mixinAdminModule } from './mixinAdminModule';
 const { entities, Controllers, Services } = generaOriginFn();
-mixinAdminModule({ entities, Controllers, Services });
+// const modules = mixinAdminModule({
+//   entities,
+//   Controllers,
+//   Services,
+// });
+
+// entities = modules.entities;
+// Controllers = modules.Controllers;
+// Services = modules.Services;
+// console.log(entities);
+// console.log(Controllers);
+// console.log(Controllers);
 @Module({
   imports: [
     ConfigModule.forRoot({}),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (config: ConfigService) => {
-        console.log(config.get('DATABASE'));
         return {
           type: 'sqlite',
           database: config.get('DATABASE'),

@@ -21,13 +21,13 @@ export interface IModuleOrigin {
 export const generaOriginFn = () => {
   return {
     Controllers: {
-      UserController: generateClass.controllers.UserController,
+      UserController,
     },
     Services: {
-      UserService: generateClass.services.UserService,
+      UserService,
     },
     entities: {
-      UserEntity: generateClass.entities.UserEntity,
+      UserEntity,
     },
   };
 };
